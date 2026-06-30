@@ -1,0 +1,70 @@
+#!/bin/bash
+# Tokscale peak/off-peak pricing switcher for DeepSeek
+#
+# Usage:
+#   tokscale-peak-pricing          — normal mode: check UTC hour, switch zone
+#   tokscale-peak-pricing disable  — restore base prices, kill Tokscale, clean up
+#
+# During peak (UTC 01:00-04:00, 06:00-10:00): multiplies all deepseek-*
+# model prices by 2 in custom-pricing.json.
+# During off-peak: restores base prices from custom-pricing.base.json.
+
+set -euo pipefail
+
+BASE_FILE="$HOME/.config/tokscale/custom-pricing.base.json"
+OUTPUT_FILE="$HOME/.config/tokscale/custom-pricing.json"
+ZONE_FILE="/tmp/tokscale-pricing-zone"
+
+# --- disable mode: roll back to base prices, kill Tokscale, clean zone ---------
+
+if [ "${1:-}" = "disable" ]; then
+  cp "$BASE_FILE" "$OUTPUT_FILE"
+  rm -f "$ZONE_FILE"
+  if command -v notify-send &>/dev/null; then
+    notify-send -t 5000 "Tokscale Pricing" "Disabled peak pricing — base prices restored"
+  fi
+  pkill -f "@tokscale/cli-linux-x64-gnu/bin/tokscale" 2>/dev/null || true
+  exit 0
+fi
+
+# --- normal mode: detect zone and switch if needed ----------------------------
+
+current_hour=$(date -u +%H)
+current_hour=$((10#$current_hour))
+
+if { [ "$current_hour" -ge 1 ] && [ "$current_hour" -lt 4 ]; } || \
+   { [ "$current_hour" -ge 6 ] && [ "$current_hour" -lt 10 ]; }; then
+  zone="peak"
+else
+  zone="off-peak"
+fi
+
+if [ -f "$ZONE_FILE" ] && [ "$(cat "$ZONE_FILE")" = "$zone" ]; then
+  exit 0
+fi
+
+echo "$zone" > "$ZONE_FILE"
+
+if [ "$zone" = "peak" ]; then
+  jq '
+    .models |= with_entries(
+      if .key | startswith("deepseek")
+      then .value |= (
+        .input_cost_per_million_tokens *= 2 |
+        .output_cost_per_million_tokens *= 2 |
+        .cache_read_input_token_cost_per_million_tokens *= 2
+      )
+      else .
+      end
+    )
+  ' "$BASE_FILE" > "$OUTPUT_FILE.tmp"
+  mv "$OUTPUT_FILE.tmp" "$OUTPUT_FILE"
+else
+  cp "$BASE_FILE" "$OUTPUT_FILE"
+fi
+
+if command -v notify-send &>/dev/null; then
+  notify-send -t 5000 "Tokscale Pricing" "Switched to $zone pricing for DeepSeek models"
+fi
+
+pkill -f "@tokscale/cli-linux-x64-gnu/bin/tokscale" 2>/dev/null || true

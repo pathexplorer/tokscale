@@ -1,0 +1,9 @@
+#!/bin/bash
+while true; do
+  tokscale tui --today -c opencode
+  e=$?
+  case $e in
+    0|130) break ;;   # manual quit or Ctrl+C → stop
+    *) sleep 0.5 ;;   # killed (e.g. by pricing script) → restart
+  esac
+done
