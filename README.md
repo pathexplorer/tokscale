@@ -25,13 +25,18 @@ Usage:
 Installation script with two interactive modes:
 
 - **[1] Full install** — creates everything at default paths
-  (`~/.local/bin/tokscale-peak-pricing`, systemd user units, base.json)
-- **[2] Workspace-only** — uses this workspace copy of the script,
+  (`~/.local/bin/tokscale-peak-pricing`, `tokscale-loop`, `opencode_tokscale.sh`,
+  `disable-tokscale-peak-pricing.sh`, systemd units, base.json)
+- **[2] Workspace-only** — uses this workspace copy of the scripts,
   creates only base.json + systemd units pointing here
 
 Checks for existing `base.json` and prompts before overwriting.
+After installation, offers to add alias `optk` to your shell rc file
+(auto-detects bash/zsh/fish from `$SHELL`).
 
 Usage: `bash install-tokscale-peak-pricing.sh`
+
+Targets Linux with systemd. Requires: jq, tmux, tokscale, opencode.
 
 ### `disable-tokscale-peak-pricing.sh`
 
