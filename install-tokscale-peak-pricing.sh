@@ -59,7 +59,7 @@ echo ""
 echo "  [1] Full install — creates everything at default locations"
 echo "      (~/.local/bin/tokscale-peak-pricing, systemd units, base.json)"
 echo ""
-echo "  [2] Workspace-only — use script at ~/$USER/projects/linux_workflow/tokscale/tokscale-peak-pricing,"
+echo "  [2] Workspace-only — use script at ~/$HOME/projects/linux_workflow/tokscale/tokscale-peak-pricing,"
 echo "      create only base.json + systemd units"
 echo ""
 read -r -p "Choose [1/2]: " mode
