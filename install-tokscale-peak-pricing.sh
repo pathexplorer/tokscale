@@ -141,6 +141,11 @@ BASEJSON
   info "$BASE_FILE"
 fi
 
+# Immediately create custom-pricing.json from base prices so Tokscale
+# has active overrides even before the first timer trigger.
+cp "$BASE_FILE" "$HOME/.config/tokscale/custom-pricing.json"
+info "$HOME/.config/tokscale/custom-pricing.json (base prices)"
+
 # --- tokscale-peak-pricing script (full mode only) ---------------------------
 
 if [ "$MODE" = "full" ]; then
@@ -186,7 +191,7 @@ else
   zone="off-peak"
 fi
 
-if [ -f "$ZONE_FILE" ] && [ "$(cat "$ZONE_FILE")" = "$zone" ]; then
+if [ -f "$ZONE_FILE" ] && [ "$(cat "$ZONE_FILE")" = "$zone" ] && [ -f "$OUTPUT_FILE" ]; then
   exit 0
 fi
 

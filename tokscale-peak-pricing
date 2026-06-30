@@ -39,7 +39,7 @@ else
   zone="off-peak"
 fi
 
-if [ -f "$ZONE_FILE" ] && [ "$(cat "$ZONE_FILE")" = "$zone" ]; then
+if [ -f "$ZONE_FILE" ] && [ "$(cat "$ZONE_FILE")" = "$zone" ] && [ -f "$OUTPUT_FILE" ]; then
   exit 0
 fi
 
