@@ -14,8 +14,11 @@ fi
 SESSION_NAME="opencode_dev_$(date +%s)"
 
 # 1. Determine the current width and height of your real terminal window
-REAL_WIDTH=${COLUMNS:-190}
-REAL_HEIGHT=${LINES:-45}
+# Use stty (reads actual terminal device, works in non-interactive scripts)
+read -r REAL_HEIGHT REAL_WIDTH < <(stty size 2>/dev/null)
+REAL_WIDTH=${REAL_WIDTH:-${COLUMNS:-120}}
+REAL_HEIGHT=${REAL_HEIGHT:-${LINES:-40}}
+echo "Terminal size: ${REAL_WIDTH}x${REAL_HEIGHT}"
 
 # 2. Create a session for the size of the monitor where OpenCode starts (Panel 0)
 tmux new-session -d -s "$SESSION_NAME" -x "$REAL_WIDTH" -y "$REAL_HEIGHT" -n "Work" "opencode"
@@ -27,7 +30,7 @@ tmux split-window -h -l 40 -t "$SESSION_NAME:0" "/bin/bash"
 #4. Now we divide this same RIGHT panel vertically and run tokscale in the UPPER part.
 # Thanks to the -b (before) flag, tokscale will be on top, and Bash will be moved down.
 # At the same time, the graphical experience of tokscale will remain strictly inside its isolated panel.
-tmux split-window -v -b -t "$SESSION_NAME:0.1" "$HOME/mega/scripts/workspace/tokscale/tokscale-loop"
+tmux split-window -v -b -t "$SESSION_NAME:0.1" "PATH='$PATH' $HOME/projects/linux_workflow/tokscale/tokscale-loop"
 #tmux split-window -v -b -t "$SESSION_NAME:0.1" "$HOME/.local/bin/tokscale-loop"
 
 # 5. Connecting to the ready-made three-window dashboard

@@ -3,7 +3,7 @@
 #
 # Two modes:
 #   [1] Full install — all files at default locations (for new users / GitHub sharing)
-#   [2] Workspace-only — use existing script at ~/mega/scripts/workspace/tokscale/tokscale-peak-pricing,
+#   [2] Workspace-only — use existing script at ~/projects/linux_workflow/tokscale/tokscale-peak-pricing,
 #                        create only base.json + systemd units pointing to it
 #
 # DeepSeek peak hours (UTC): 01:00–04:00 and 06:00–10:00
@@ -59,7 +59,7 @@ echo ""
 echo "  [1] Full install — creates everything at default locations"
 echo "      (~/.local/bin/tokscale-peak-pricing, systemd units, base.json)"
 echo ""
-echo "  [2] Workspace-only — use script at ~/$USER/mega/scripts/workspace/tokscale/tokscale-peak-pricing,"
+echo "  [2] Workspace-only — use script at ~/$USER/projects/linux_workflow/tokscale/tokscale-peak-pricing,"
 echo "      create only base.json + systemd units"
 echo ""
 read -r -p "Choose [1/2]: " mode
@@ -68,7 +68,7 @@ echo ""
 case "$mode" in
   2)
     MODE="workspace"
-    WORKSPACE_SCRIPT="$HOME/mega/scripts/workspace/tokscale/tokscale-peak-pricing"
+    WORKSPACE_SCRIPT="$HOME/projects/linux_workflow/tokscale/tokscale-peak-pricing"
     if [ ! -f "$WORKSPACE_SCRIPT" ]; then
       echo "Error: workspace script not found at $WORKSPACE_SCRIPT"
       echo "Create it first or choose option 1 for a full install."
@@ -225,7 +225,7 @@ SCRIPT
   info "$HOME/.local/bin/tokscale-peak-pricing"
   SCRIPT_PATH="%h/.local/bin/tokscale-peak-pricing"
 else
-  SCRIPT_PATH="%h/mega/scripts/workspace/tokscale/tokscale-peak-pricing"
+  SCRIPT_PATH="%h/projects/linux_workflow/tokscale/tokscale-peak-pricing"
   info "Using existing script at $WORKSPACE_SCRIPT"
 fi
 
@@ -379,7 +379,7 @@ if [ -n "$rc_file" ] && [ -f "$rc_file" ]; then
     if [ "$MODE" = "full" ]; then
       alias_target='$HOME/.local/bin/opencode_tokscale.sh'
     else
-      alias_target='$HOME/mega/scripts/workspace/tokscale/opencode_tokscale.sh'
+      alias_target='$HOME/projects/linux_workflow/tokscale/opencode_tokscale.sh'
     fi
     if grep -qs "^alias optk=" "$rc_file"; then
       warn "Alias 'optk' already exists in $rc_file. Skipping."
